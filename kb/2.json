@@ -1,0 +1,46 @@
+{
+  "BundleName": "APT41-DUSTTRAP-Curated-Sigma",
+  "Description": "Curated Sigma rules relevant to APT41 / Arisen-from-Dust campaign.",
+  "CreatedAt": "2025-10-20T07:50:13Z",
+  "RuleCount": 3,
+  "Rules": [
+    {
+      "Name": "APT41 DUST DLL Sideloading Activity",
+      "Description": "Detects DLL sideloading of trojanized DLLs used in APT41 DUST campaign, where legit binaries are abused to load malicious DLLs\n\nAuthor: D3xM0n\nSigma Repository: [GitHub](https://github.com/SigmaHQ/sigma)",
+      "Query": "sourcetype='windows-sysmon' eql select * from _source_ where process_path = 'c:\\program files\\ahnlab\\v3lite\\ahnuninst.exe' and (image_loaded like '%\\sbiedll.dll' or image_loaded like '%\\dbgeng.dll' or image_loaded like '%\\atstrust.dll' or image_loaded like '%\\hostfxr.dll')",
+      "InsertDate": "2025-10-20T07:44:46Z",
+      "LastUpdateDate": "2025-10-20T07:44:46Z",
+      "Tags": [
+        "attack.persistence",
+        "attack.t1574.002",
+        "attack.defense-evasion",
+        "attack.privilege-escalation"
+      ],
+      "Level": "high"
+    },
+    {
+      "Name": "Rar Usage with Password and Compression Level",
+      "Description": "Detects the use of rar.exe, on the command line, to create an archive with password protection or with a specific compression level. This is pretty indicative of malicious actions.\n\nAuthor: @ROxPinTeddy\nSigma Repository: [GitHub](https://github.com/SigmaHQ/sigma)",
+      "Query": "sourcetype='windows-sysmon' eql select * from _source_ where (command like '% -hp%' and (command like '% -m%' or command like '% a %'))",
+      "InsertDate": "2025-10-16T14:04:35Z",
+      "LastUpdateDate": "2025-10-16T14:04:35Z",
+      "Tags": [
+        "attack.collection",
+        "attack.t1560.001"
+      ],
+      "Level": "high"
+    },
+    {
+      "Name": "Suspicious File Downloaded From Direct IP Via Certutil.EXE",
+      "Description": "Detects the execution of certutil with certain flags that allow the utility to download files from direct IPs.\n\nAuthor: Nasreddine Bencherchali (Nextron Systems)\nSigma Repository: [GitHub](https://github.com/SigmaHQ/sigma)",
+      "Query": "sourcetype='windows-sysmon' eql select * from _source_ where (((command like '%urlcache %' or command like '%verifyctl %') and (command like '%://1%' or command like '%://2%' or command like '%://3%' or command like '%://4%' or command like '%://5%' or command like '%://6%' or command like '%://7%' or command like '%://8%' or command like '%://9%') and (process_path like '%\\certutil.exe' and original_file_name = 'certutil.exe')) and  not command like '%://7-%')",
+      "InsertDate": "2025-10-16T14:03:57Z",
+      "LastUpdateDate": "2025-10-16T14:03:57Z",
+      "Tags": [
+        "attack.defense-evasion",
+        "attack.t1027"
+      ],
+      "Level": "high"
+    }
+  ]
+}

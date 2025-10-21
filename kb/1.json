@@ -1,0 +1,763 @@
+{
+    "APT41": {
+        "aliases": [
+            "Winnti",
+            "Barium",
+            "Wicked Panda",
+            "Brass Typhoon",
+            "Double Dragon"
+        ],
+        "origin": "China",
+        "apt_general_info": "APT41 is a prolific cyber threat group that carries out Chinese state-sponsored espionage activity in addition to financially motivated activity that may be outside of state control. The group's financially motivated intrusions have primarily targeted the video game industry, involving activities such as stealing source code and digital certificates, manipulating virtual currencies, and attempting to deploy ransomware.",
+        "sources": [
+            "google-cloud-blog",
+            "imda-pdf"
+        ]
+    },
+    "APT41_DUST_Campaign": {
+        "overview": "Recently, APT41, a Chinese-nexus threat actor was observed to have performed cyber-espionage campaign targeting the media and entertainment sector in Asia. In the recent campaign, they were seen mainly using in-memory droppers and plugins to successfully infiltrate and maintain prolonged, unauthorised access to numerous victims’ networks, enabling them to extract sensitive data over an extended period.",
+        "impact": [
+            "Media & Entertainment Sector"
+        ],
+        "TTPs": [
+            {
+                "tactic": "Reconnaissance",
+                "technique_id": "T15931.002",
+                "technique_name": "Search Open Websites/Domains: Search Engines",
+                "description": "APT41 was observed using search engines in visiting victim's reachable servers.",
+                "raw_row_text": "Reconnaissance T15931.002 Search Open Websites/Domains: Search Engines APT41 was observed using search engines in visiting victim's reachable servers.",
+                "tools": [],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Reconnaissance",
+                "technique_id": "T1594",
+                "technique_name": "Search Victim-Owned Websites",
+                "description": "APT41 was observed visiting victim-owned infrastructure that was externally reachable and observed in internet scan data.",
+                "raw_row_text": "Reconnaissance T1594 Search Victim-Owned Websites APT41 was observed visiting victim-owned infrastructure that was externally reachable and observed in internet scan data.",
+                "tools": [],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Collection",
+                "technique_id": "T1560.001",
+                "technique_name": "Archive via Utility",
+                "description": "APT41 was observed using rar to compress the data they downloaded from internal Oracle Databases.",
+                "raw_row_text": "Collection T1560.001 Archive via Utility APT41 was observed using rar to compress the data they downloaded from internal Oracle Databases.",
+                "tools": [],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Command and Control",
+                "technique_id": "T1071.001",
+                "technique_name": "Web Protocols",
+                "description": "APT41 was observed using HTTPS for the communication as C2 for their malware.",
+                "raw_row_text": "Command and Control T1071.001 Web Protocols APT41 was observed using HTTPS for the communication as C2 for their malware.",
+                "tools": [],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Exfiltration",
+                "technique_id": "T1567.002",
+                "technique_name": "Exfiltration to Cloud Storage",
+                "description": "APT41 was observed using OneDrive for the exfiltration of staged data.",
+                "raw_row_text": "Exfiltration T1567.002 Exfiltration to Cloud Storage APT41 was observed using OneDrive for the exfiltration of staged data.",
+                "tools": [
+                    "OneDrive"
+                ],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Persistence",
+                "technique_id": "T1543.003",
+                "technique_name": "Create or Modify System Process: Windows Service",
+                "description": "APT41 was observed creating a Windows Service to achieve persistency",
+                "raw_row_text": "Persistence T1543.003 Create or Modify System Process: Windows Service APT41 was observed creating a Windows Service to achieve persistency",
+                "tools": [],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Persistence",
+                "technique_id": "T1574.001",
+                "technique_name": "DLL Search Order Hijacking",
+                "description": "APT41 abused DLL search order hijacking to execute DUSTTRAP by using benign and malicious code-signed Windows binaries.",
+                "raw_row_text": "Persistence T1574.001 DLL Search Order Hijacking APT41 abused DLL search order hijacking to execute DUSTTRAP by using benign and malicious code-signed Windows binaries.",
+                "tools": [
+                    "DUSTTRAP"
+                ],
+                "source": [
+                    "google-cloud-blog"
+                ],
+                "related_IOCs": [
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "9991ce9d2746313f505dbf0487337082",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "c33247bc3e7e8cb72133e47930e6ddad",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "hostfxr.dll",
+                        "md5": "cfce85548436fb89a83bf34dc17f325d",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "e98b9e21928252332edf934f3d18ac21",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "8222352a61eacca3a1c6517956aa0b55",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "dc725f5e9b1ae062fbec86ee4d816b45",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "Sbiedll.dll",
+                        "md5": "d72f202c1d684c9a19f075290a60920f",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "atstrust.dll",
+                        "md5": "393065ef9754e3f39b24b2d1051eab61",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "0e74285f3359393e57f5d49c156aca47",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "aca5c6daecf463012a09564764584937",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "336a0d6f8cc92bf9740ce17de600463b",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "6bc4a92ff4d2cfc9da91ae6a5d2ad3d5",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "a689e182fe33b9d564dddc35412ea0a7",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "e4a4aafb49b8c86a5ac087ae342c0ee6",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "e584119a4766e6cf49093c666965c8be",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "f1769ad5a9dc44794895275c656ed484",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "value": "www[.]eloples[.]com",
+                        "family": "DUSTTRAP",
+                        "comment": "First observed at 2024-02-21 Last observed at 2024-07-16",
+                        "source": "google-cloud-blog",
+                        "type": "Network_Based"
+                    }
+                ]
+            },
+            {
+                "tactic": "Persistence",
+                "technique_id": "T1574.002",
+                "technique_name": "DLL Side-Loading",
+                "description": "APT41 abused DLL sideloading to execute DUSTTRAP by using the AhnLab uninstaller.",
+                "raw_row_text": "Persistence T1574.002 DLL Side-Loading APT41 abused DLL sideloading to execute DUSTTRAP by using the AhnLab uninstaller.",
+                "tools": [
+                    "DUSTTRAP"
+                ],
+                "source": [
+                    "google-cloud-blog"
+                ],
+                "related_IOCs": [
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "9991ce9d2746313f505dbf0487337082",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "c33247bc3e7e8cb72133e47930e6ddad",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "hostfxr.dll",
+                        "md5": "cfce85548436fb89a83bf34dc17f325d",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "e98b9e21928252332edf934f3d18ac21",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "8222352a61eacca3a1c6517956aa0b55",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "dc725f5e9b1ae062fbec86ee4d816b45",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "Sbiedll.dll",
+                        "md5": "d72f202c1d684c9a19f075290a60920f",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "atstrust.dll",
+                        "md5": "393065ef9754e3f39b24b2d1051eab61",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "0e74285f3359393e57f5d49c156aca47",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "aca5c6daecf463012a09564764584937",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "336a0d6f8cc92bf9740ce17de600463b",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "6bc4a92ff4d2cfc9da91ae6a5d2ad3d5",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "a689e182fe33b9d564dddc35412ea0a7",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "e4a4aafb49b8c86a5ac087ae342c0ee6",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "e584119a4766e6cf49093c666965c8be",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "f1769ad5a9dc44794895275c656ed484",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "value": "www[.]eloples[.]com",
+                        "family": "DUSTTRAP",
+                        "comment": "First observed at 2024-02-21 Last observed at 2024-07-16",
+                        "source": "google-cloud-blog",
+                        "type": "Network_Based"
+                    }
+                ]
+            },
+            {
+                "tactic": "Defense Evasion",
+                "technique_id": "T1070.004",
+                "technique_name": "File Deletion",
+                "description": "APT41 deleted files from the system after they were done using them. This was observed after APT41 created database dumps and exfiltrated the files.",
+                "raw_row_text": "Defense Evasion T1070.004 File Deletion APT41 deleted files from the system after they were done using them. This was observed after APT41 created database dumps and exfiltrated the files.",
+                "tools": [],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Defense Evasion",
+                "technique_id": "T1036.005",
+                "technique_name": "Match Legitimate Name or Location",
+                "description": "APT41 used legitimate Windows names and locations to trojanize binaries",
+                "raw_row_text": "Defense Evasion T1036.005 Match Legitimate Name or Location APT41 used legitimate Windows names and locations to trojanize binaries",
+                "tools": [],
+                "source": [
+                    "google-cloud-blog"
+                ]
+            },
+            {
+                "tactic": "Defense Evasion",
+                "technique_id": "T1027.013",
+                "technique_name": "Encrypted/Encoded File",
+                "description": "APT41 leveraged AES-128-CFB for the encryption of the payloads that should be loaded by DUSTTRAP.",
+                "raw_row_text": "Defense Evasion T1027.013 Encrypted/Encoded File APT41 leveraged AES-128-CFB for the encryption of the payloads that should be loaded by DUSTTRAP.",
+                "tools": [
+                    "DUSTTRAP"
+                ],
+                "source": [
+                    "google-cloud-blog"
+                ],
+                "related_IOCs": [
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "9991ce9d2746313f505dbf0487337082",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "c33247bc3e7e8cb72133e47930e6ddad",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "hostfxr.dll",
+                        "md5": "cfce85548436fb89a83bf34dc17f325d",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "e98b9e21928252332edf934f3d18ac21",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "8222352a61eacca3a1c6517956aa0b55",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "dc725f5e9b1ae062fbec86ee4d816b45",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "Sbiedll.dll",
+                        "md5": "d72f202c1d684c9a19f075290a60920f",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "atstrust.dll",
+                        "md5": "393065ef9754e3f39b24b2d1051eab61",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "0e74285f3359393e57f5d49c156aca47",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "dbgeng.dll",
+                        "md5": "aca5c6daecf463012a09564764584937",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "336a0d6f8cc92bf9740ce17de600463b",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "6bc4a92ff4d2cfc9da91ae6a5d2ad3d5",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "a689e182fe33b9d564dddc35412ea0a7",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "e4a4aafb49b8c86a5ac087ae342c0ee6",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "e584119a4766e6cf49093c666965c8be",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "-",
+                        "md5": "f1769ad5a9dc44794895275c656ed484",
+                        "family": "DUSTTRAP",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "value": "www[.]eloples[.]com",
+                        "family": "DUSTTRAP",
+                        "comment": "First observed at 2024-02-21 Last observed at 2024-07-16",
+                        "source": "google-cloud-blog",
+                        "type": "Network_Based"
+                    }
+                ]
+            },
+            {
+                "tactic": "Persistence",
+                "technique_id": "T1505.003",
+                "technique_name": "Server Software Component: Web Shell",
+                "description": "APT41 was observed using web shells to drop and execute DUSTPAN.",
+                "raw_row_text": "Persistence T1505.003 Server Software Component: Web Shell APT41 was observed using web shells to drop and execute DUSTPAN.",
+                "tools": [
+                    "DUSTPAN"
+                ],
+                "source": [
+                    "google-cloud-blog"
+                ],
+                "related_IOCs": [
+                    {
+                        "filename": "aclui.dll",
+                        "md5": "17d0ada8f5610ff29f2e8eaf0e3bb578",
+                        "family": "DUSTPAN",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "conn.exe",
+                        "md5": "35f650c94faf6a2068e8238dd99edbea",
+                        "family": "DUSTPAN",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "PrintWorkflowUserSvc_ a0c15f9d.dll / cbi.dll",
+                        "md5": "3bb44c0dd7f424864d76d4df09538cb6",
+                        "family": "DUSTPAN",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    }
+                ]
+            },
+            {
+                "tactic": "Execution",
+                "technique_id": "T1569.002",
+                "technique_name": "Service Execution",
+                "description": "APT41 was observed using Windows services to execute DUSTPAN binaries.",
+                "raw_row_text": "Execution T1569.002 Service Execution APT41 was observed using Windows services to execute DUSTPAN binaries.",
+                "tools": [
+                    "DUSTPAN"
+                ],
+                "source": [
+                    "google-cloud-blog"
+                ],
+                "related_IOCs": [
+                    {
+                        "filename": "aclui.dll",
+                        "md5": "17d0ada8f5610ff29f2e8eaf0e3bb578",
+                        "family": "DUSTPAN",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "conn.exe",
+                        "md5": "35f650c94faf6a2068e8238dd99edbea",
+                        "family": "DUSTPAN",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    },
+                    {
+                        "filename": "PrintWorkflowUserSvc_ a0c15f9d.dll / cbi.dll",
+                        "md5": "3bb44c0dd7f424864d76d4df09538cb6",
+                        "family": "DUSTPAN",
+                        "source": "google-cloud-blog",
+                        "type": "Host_Based"
+                    }
+                ]
+            }
+        ],
+        "Indicators": {
+            "Host_Based": [
+                {
+                    "filename": "sqluldr.exe",
+                    "md5": "fcff642268898fcf65702a214aefbf9e",
+                    "family": "SQLULDR2",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "OneDriveUploader.exe",
+                    "md5": "ac125aea0b703de37980779599438b4a",
+                    "family": "PINEGROVE",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "aclui.dll",
+                    "md5": "17d0ada8f5610ff29f2e8eaf0e3bb578",
+                    "family": "DUSTPAN",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "dbgeng.dll",
+                    "md5": "9991ce9d2746313f505dbf0487337082",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "dbgeng.dll",
+                    "md5": "c33247bc3e7e8cb72133e47930e6ddad",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "hostfxr.dll",
+                    "md5": "cfce85548436fb89a83bf34dc17f325d",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "dbgeng.dll",
+                    "md5": "e98b9e21928252332edf934f3d18ac21",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "dbgeng.dll",
+                    "md5": "8222352a61eacca3a1c6517956aa0b55",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "dc725f5e9b1ae062fbec86ee4d816b45",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "Sbiedll.dll",
+                    "md5": "d72f202c1d684c9a19f075290a60920f",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "atstrust.dll",
+                    "md5": "393065ef9754e3f39b24b2d1051eab61",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "0e74285f3359393e57f5d49c156aca47",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "conn.exe",
+                    "md5": "35f650c94faf6a2068e8238dd99edbea",
+                    "family": "DUSTPAN",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "PrintWorkflowUserSvc_ a0c15f9d.dll / cbi.dll",
+                    "md5": "3bb44c0dd7f424864d76d4df09538cb6",
+                    "family": "DUSTPAN",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "dbgeng.dll",
+                    "md5": "aca5c6daecf463012a09564764584937",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "336a0d6f8cc92bf9740ce17de600463b",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "6bc4a92ff4d2cfc9da91ae6a5d2ad3d5",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "a689e182fe33b9d564dddc35412ea0a7",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "e4a4aafb49b8c86a5ac087ae342c0ee6",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "e584119a4766e6cf49093c666965c8be",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "filename": "-",
+                    "md5": "f1769ad5a9dc44794895275c656ed484",
+                    "family": "DUSTTRAP",
+                    "source": "google-cloud-blog"
+                }
+            ],
+            "Network_Based": [
+                {
+                    "value": "ns2[.]akacur[.]tk",
+                    "family": "BEACON",
+                    "comment": "-",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "value": "ns1[.]akacur[.]tk",
+                    "family": "BEACON",
+                    "comment": "-",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "value": "orange-breeze-66bb[.]tezsfsoikdvd[.]workers[.]dev",
+                    "family": "BEACON",
+                    "comment": "-",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "value": "www[.]eloples[.]com",
+                    "family": "DUSTTRAP",
+                    "comment": "First observed at 2024-02-21 Last observed at 2024-07-16",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "value": "95.164.16[.]231",
+                    "family": "-",
+                    "comment": "Related to DUSTTRAP FQDN www[.]eloples[.]com",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "value": "152.89.244[.]185",
+                    "family": "-",
+                    "comment": "Used to deliver DUSTPAN First activity observed at 2023-03-21",
+                    "source": "google-cloud-blog"
+                },
+                {
+                    "value": "hxxp://152.89.244[.]185/conn.exe",
+                    "family": "-",
+                    "comment": "Used to deliver DUSTPAN First activity observed at 2023-03-21",
+                    "source": "google-cloud-blog"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>APT Tactics Visualization - MITRE ATT&CK</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0b1020;
+      --panel: #0f152a;
+      --panel-2: #11162f;
+      --muted: #8b95a7;
+      --text: #e5e7eb;
+      --accent: #2563eb;
+      --border: #223052;
+      --green: #10b981;
+      --danger: #ef4444;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body {
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(37,99,235,.2), transparent 40%),
+                  radial-gradient(1200px 800px at 80% 110%, rgba(34,211,238,.15), transparent 45%),
+                  var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
+    }
+
+    #graphCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #graphCanvas:active { cursor: grabbing; }
+
+    .graph-controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(15, 21, 42, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      min-width: 200px;
+      z-index: 10;
+    }
+
+    .graph-controls h3 {
+      margin: 0 0 .75rem 0;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .graph-controls button {
+      display: block;
+      width: 100%;
+      margin-bottom: .5rem;
+      padding: .6rem;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: .9rem;
+      transition: all .2s;
+    }
+
+    .graph-controls button:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .graph-controls button:last-child { margin-bottom: 0; }
+
+    #nodeInfo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 450px;
+      max-height: calc(100vh - 40px);
+      background: rgba(15, 21, 42, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: none;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+
+    #nodeInfo h3 {
+      margin: 0 0 1rem 0;
+      color: var(--accent);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: .75rem;
+      font-size: 1.2rem;
+    }
+
+    #nodeInfo .close-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.4rem;
+      padding: .25rem;
+      line-height: 1;
+      transition: color .2s;
+    }
+
+    #nodeInfo .close-btn:hover { color: var(--text); }
+
+    .info-section {
+      margin-bottom: 1rem;
+    }
+
+    .info-label {
+      color: var(--muted);
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: .4rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-size: .95rem;
+      line-height: 1.6;
+      background: rgba(255,255,255,.03);
+      padding: .75rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      padding: .3rem .6rem;
+      border-radius: 6px;
+      font-size: .8rem;
+      margin-right: .4rem;
+      margin-bottom: .4rem;
+    }
+
+    .badge.danger {
+      background: var(--danger);
+    }
+
+    .badge.success {
+      background: var(--green);
+    }
+
+    .ioc-item {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: .75rem;
+      border-radius: 8px;
+      margin-bottom: .5rem;
+      font-size: .85rem;
+    }
+
+    .ioc-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .ioc-header {
+      font-weight: 600;
+      color: #fca5a5;
+      margin-bottom: .4rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .ioc-details {
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .ioc-details div {
+      margin-bottom: .25rem;
+    }
+
+    .ioc-details div:last-child {
+      margin-bottom: 0;
+    }
+
+    .ioc-label {
+      color: var(--muted);
+      font-weight: 600;
+      display: inline-block;
+      min-width: 80px;
+    }
+
+    .ioc-value {
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      word-break: break-all;
+    }
+
+    .collapsible-section {
+      margin-top: .5rem;
+    }
+
+    .section-toggle {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: .5rem .75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      font-size: .9rem;
+      font-weight: 600;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-toggle:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .section-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease;
+    }
+
+    .section-content.expanded {
+      max-height: 2000px;
+      margin-top: .5rem;
+    }
+
+    #nodeInfo::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #nodeInfo::-webkit-scrollbar-track {
+      background: rgba(0,0,0,.2);
+      border-radius: 4px;
+    }
+
+    #nodeInfo::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    #nodeInfo::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="graphCanvas"></canvas>
+
+  <div class="graph-controls">
+    <h3>🎯 Controls</h3>
+    <button id="resetZoom">🔄 Reset View</button>
+    <button id="centerGraph">🎯 Center Graph</button>
+    <button id="backToChat">← Back to Chat</button>
+  </div>
+
+  <div id="nodeInfo">
+    <button class="close-btn" id="closeInfo">✕</button>
+    <h3 id="nodeTitle">Technique Information</h3>
+    <div id="nodeDetails"></div>
+  </div>
+
+  <script>
+    // Load visualization data from localStorage
+    let visualizationData = null;
+    try {
+      const saved = localStorage.getItem('chatllm.vizdata.v1');
+      if (saved) visualizationData = JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to load visualization data:', e);
+    }
+
+    // Graph variables
+    let canvas, ctx;
+    let nodes = [];
+    let edges = [];
+    let selectedNode = null;
+    let hoveredNode = null;
+    let camera = { x: 0, y: 0, zoom: 1 };
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let dragOffset = { x: 0, y: 0 };
+    let animationFrame = null;
+
+    // MITRE ATT&CK tactic order and colors
+    const tacticOrder = [
+      'Reconnaissance',
+      'Resource Development',
+      'Initial Access',
+      'Execution',
+      'Persistence',
+      'Privilege Escalation',
+      'Defense Evasion',
+      'Credential Access',
+      'Discovery',
+      'Lateral Movement',
+      'Collection',
+      'Command and Control',
+      'Exfiltration',
+      'Impact'
+    ];
+
+    const tacticColors = {
+      'Reconnaissance': '#ef4444',
+      'Resource Development': '#dc2626',
+      'Initial Access': '#f97316',
+      'Execution': '#ea580c',
+      'Persistence': '#eab308',
+      'Privilege Escalation': '#ca8a04',
+      'Defense Evasion': '#22c55e',
+      'Credential Access': '#16a34a',
+      'Discovery': '#14b8a6',
+      'Lateral Movement': '#0d9488',
+      'Collection': '#06b6d4',
+      'Command and Control': '#3b82f6',
+      'Exfiltration': '#8b5cf6',
+      'Impact': '#a855f7'
+    };
+
+    function init() {
+      canvas = document.getElementById('graphCanvas');
+      ctx = canvas.getContext('2d');
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      
+      if (visualizationData) {
+        parseVisualizationData();
+        layoutNodesInColumns();
+        createRelationships();
+        startAnimation();
+      } else {
+        drawNoData();
+      }
+      
+      setupEventListeners();
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function parseVisualizationData() {
+      nodes = [];
+      edges = [];
+      
+      // Find campaigns in the data
+      for (const [key, value] of Object.entries(visualizationData)) {
+        if (key === 'APT41' || !value.TTPs) continue;
+        
+        const campaign = value;
+        const ttps = campaign.TTPs || [];
+        
+        // Create a node for each technique
+        ttps.forEach((ttp, index) => {
+          nodes.push({
+            id: `${ttp.technique_id}_${index}`,
+            technique_id: ttp.technique_id,
+            technique_name: ttp.technique_name,
+            tactic: ttp.tactic,
+            description: ttp.description,
+            tools: ttp.tools || [],
+            source: ttp.source || [],
+            related_IOCs: ttp.related_IOCs || [],
+            color: tacticColors[ttp.tactic] || '#6366f1',
+            x: 0,
+            y: 0,
+            radius: 45
+          });
+        });
+      }
+    }
+
+    function layoutNodesInColumns() {
+      // Group nodes by tactic
+      const tacticGroups = {};
+      nodes.forEach(node => {
+        if (!tacticGroups[node.tactic]) {
+          tacticGroups[node.tactic] = [];
+        }
+        tacticGroups[node.tactic].push(node);
+      });
+
+      // Calculate column layout
+      const activeTactics = tacticOrder.filter(tactic => tacticGroups[tactic]);
+      const numColumns = activeTactics.length;
+      const columnWidth = canvas.width / (numColumns + 1);
+      const headerHeight = 100;
+      const nodeSpacing = 140;
+
+      activeTactics.forEach((tactic, colIndex) => {
+        const techniques = tacticGroups[tactic];
+        const x = columnWidth * (colIndex + 1);
+        const totalHeight = techniques.length * nodeSpacing;
+        const startY = (canvas.height - totalHeight) / 2 + headerHeight;
+
+        techniques.forEach((node, rowIndex) => {
+          node.x = x;
+          node.y = startY + rowIndex * nodeSpacing;
+          node.columnIndex = colIndex;
+          node.rowIndex = rowIndex;
+        });
+      });
+    }
+
+    function createRelationships() {
+      // Create edges between related techniques
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const node1 = nodes[i];
+          const node2 = nodes[j];
+          
+          if (node1.tactic === node2.tactic) continue;
+          
+          // Check if they share tools
+          const tools1 = new Set(node1.tools);
+          const tools2 = new Set(node2.tools);
+          const sharedTools = [...tools1].filter(t => tools2.has(t));
+          
+          if (sharedTools.length > 0) {
+            edges.push({
+              from: node1.id,
+              to: node2.id,
+              weight: sharedTools.length,
+              sharedTools: sharedTools,
+              type: 'tool'
+            });
+            continue;
+          }
+          
+          // Check if tactics are sequential
+          const tactic1Index = tacticOrder.indexOf(node1.tactic);
+          const tactic2Index = tacticOrder.indexOf(node2.tactic);
+          
+          if (Math.abs(tactic1Index - tactic2Index) === 1) {
+            edges.push({
+              from: node1.id,
+              to: node2.id,
+              weight: 0.5,
+              type: 'sequential'
+            });
+          }
+        }
+      }
+    }
+
+    function startAnimation() {
+      function animate() {
+        draw();
+        animationFrame = requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.save();
+      ctx.translate(camera.x, camera.y);
+      ctx.scale(camera.zoom, camera.zoom);
+      
+      drawTacticHeaders();
+      drawTacticSeparators();
+      
+      // Draw edges
+      edges.forEach(edge => {
+        const from = nodes.find(n => n.id === edge.from);
+        const to = nodes.find(n => n.id === edge.to);
+        if (!from || !to) return;
+        
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        
+        if (edge.type === 'tool') {
+          ctx.strokeStyle = `rgba(59, 130, 246, ${0.4 + edge.weight * 0.2})`;
+          ctx.lineWidth = 2 + edge.weight;
+        } else {
+          ctx.strokeStyle = 'rgba(100, 116, 139, 0.2)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([5, 5]);
+        }
+        
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+      
+      // Draw nodes
+      nodes.forEach(node => {
+        const isSelected = selectedNode === node;
+        const isHovered = hoveredNode === node;
+        
+        if (isSelected || isHovered) {
+          ctx.shadowColor = node.color;
+          ctx.shadowBlur = 15;
+        }
+        
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fillStyle = node.color;
+        ctx.fill();
+        
+        ctx.strokeStyle = isSelected ? '#fff' : 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = isSelected ? 3 : 2;
+        ctx.stroke();
+        
+        ctx.shadowBlur = 0;
+        
+        // Technique ID
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.technique_id, node.x, node.y - 8);
+        
+        // Truncated name
+        ctx.font = '10px sans-serif';
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        const maxWidth = node.radius * 1.6;
+        const name = node.technique_name;
+        const words = name.split(' ');
+        
+        let line1 = '', line2 = '';
+        for (let i = 0; i < words.length; i++) {
+          const testLine = line1 + words[i] + ' ';
+          if (ctx.measureText(testLine).width > maxWidth && line1 !== '') {
+            line2 = words.slice(i).join(' ');
+            break;
+          }
+          line1 = testLine;
+        }
+        
+        if (line2 && ctx.measureText(line2).width > maxWidth) {
+          line2 = line2.substring(0, 15) + '...';
+        }
+        
+        ctx.fillText(line1.trim(), node.x, node.y + 10);
+        if (line2) {
+          ctx.fillText(line2, node.x, node.y + 22);
+        }
+      });
+      
+      ctx.restore();
+    }
+
+    function drawTacticHeaders() {
+      const tacticGroups = {};
+      nodes.forEach(node => {
+        if (!tacticGroups[node.tactic]) {
+          tacticGroups[node.tactic] = { x: node.x, color: node.color };
+        }
+      });
+
+      Object.entries(tacticGroups).forEach(([tactic, info]) => {
+        ctx.fillStyle = info.color;
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(tactic, info.x, 40);
+      });
+    }
+
+    function drawTacticSeparators() {
+      const tacticXPositions = new Set();
+      nodes.forEach(node => tacticXPositions.add(node.x));
+      const positions = Array.from(tacticXPositions).sort((a, b) => a - b);
+
+      ctx.strokeStyle = 'rgba(100, 116, 139, 0.2)';
+      ctx.lineWidth = 1;
+      
+      for (let i = 0; i < positions.length - 1; i++) {
+        const x = (positions[i] + positions[i + 1]) / 2;
+        ctx.beginPath();
+        ctx.moveTo(x, 60);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+    }
+
+    function drawNoData() {
+      ctx.fillStyle = '#8b95a7';
+      ctx.font = '20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('No visualization data available', canvas.width / 2, canvas.height / 2);
+      ctx.font = '14px sans-serif';
+      ctx.fillText('Import an APT analysis JSON file to visualize tactics', canvas.width / 2, canvas.height / 2 + 30);
+    }
+
+    function setupEventListeners() {
+      canvas.addEventListener('mousedown', onMouseDown);
+      canvas.addEventListener('mousemove', onMouseMove);
+      canvas.addEventListener('mouseup', onMouseUp);
+      canvas.addEventListener('wheel', onWheel, { passive: false });
+      canvas.addEventListener('click', onClick);
+      
+      document.getElementById('resetZoom').addEventListener('click', resetView);
+      document.getElementById('centerGraph').addEventListener('click', centerGraph);
+      document.getElementById('backToChat').addEventListener('click', () => {
+        window.location.href = '/';
+      });
+      document.getElementById('closeInfo').addEventListener('click', closeNodeInfo);
+    }
+
+    function screenToWorld(screenX, screenY) {
+      return {
+        x: (screenX - camera.x) / camera.zoom,
+        y: (screenY - camera.y) / camera.zoom
+      };
+    }
+
+    function getNodeAt(x, y) {
+      const world = screenToWorld(x, y);
+      return nodes.find(node => {
+        const dx = world.x - node.x;
+        const dy = world.y - node.y;
+        return Math.sqrt(dx * dx + dy * dy) <= node.radius;
+      });
+    }
+
+    function onMouseDown(e) {
+      isDragging = true;
+      dragStart = { x: e.clientX, y: e.clientY };
+      dragOffset = { x: camera.x, y: camera.y };
+      canvas.style.cursor = 'grabbing';
+    }
+
+    function onMouseMove(e) {
+      const node = getNodeAt(e.clientX, e.clientY);
+      hoveredNode = node;
+      canvas.style.cursor = node ? 'pointer' : (isDragging ? 'grabbing' : 'grab');
+      
+      if (isDragging) {
+        camera.x = dragOffset.x + (e.clientX - dragStart.x);
+        camera.y = dragOffset.y + (e.clientY - dragStart.y);
+      }
+    }
+
+    function onMouseUp(e) {
+      isDragging = false;
+      canvas.style.cursor = 'grab';
+    }
+
+    function onWheel(e) {
+      e.preventDefault();
+      const zoomSpeed = 0.1;
+      const delta = e.deltaY > 0 ? -zoomSpeed : zoomSpeed;
+      const newZoom = Math.max(0.1, Math.min(3, camera.zoom + delta));
+      
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      const worldBefore = screenToWorld(mouseX, mouseY);
+      
+      camera.zoom = newZoom;
+      
+      const worldAfter = screenToWorld(mouseX, mouseY);
+      camera.x += (worldAfter.x - worldBefore.x) * camera.zoom;
+      camera.y += (worldAfter.y - worldBefore.y) * camera.zoom;
+    }
+
+    function onClick(e) {
+      const node = getNodeAt(e.clientX, e.clientY);
+      if (node) {
+        selectedNode = node;
+        showNodeInfo(node);
+      } else {
+        selectedNode = null;
+        closeNodeInfo();
+      }
+    }
+
+    function showNodeInfo(node) {
+      const infoPanel = document.getElementById('nodeInfo');
+      const title = document.getElementById('nodeTitle');
+      const details = document.getElementById('nodeDetails');
+      
+      title.textContent = `${node.technique_id}: ${node.technique_name}`;
+      
+      let html = `
+        <div class="info-section">
+          <div class="info-label">Tactic</div>
+          <div class="info-value">${node.tactic}</div>
+        </div>
+        
+        <div class="info-section">
+          <div class="info-label">Technique ID</div>
+          <div class="info-value">${node.technique_id}</div>
+        </div>
+        
+        <div class="info-section">
+          <div class="info-label">Description</div>
+          <div class="info-value">${node.description}</div>
+        </div>
+      `;
+      
+      if (node.tools && node.tools.length > 0) {
+        html += `
+          <div class="info-section">
+            <div class="info-label">Tools Used</div>
+            <div>
+              ${node.tools.map(tool => `<span class="badge">${tool}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      if (node.source && node.source.length > 0) {
+        html += `
+          <div class="info-section">
+            <div class="info-label">Sources</div>
+            <div class="info-value">${node.source.join(', ')}</div>
+          </div>
+        `;
+      }
+      
+      // Add IOCs section
+      if (node.related_IOCs && node.related_IOCs.length > 0) {
+        const hostIOCs = node.related_IOCs.filter(ioc => ioc.type === 'Host_Based');
+        const networkIOCs = node.related_IOCs.filter(ioc => ioc.type === 'Network_Based');
+        
+        html += `
+          <div class="info-section">
+            <div class="info-label">Indicators of Compromise (${node.related_IOCs.length})</div>
+        `;
+        
+        if (hostIOCs.length > 0) {
+          html += `
+            <div class="collapsible-section">
+              <button class="section-toggle" onclick="toggleSection('host-iocs')">
+                <span>🖥️ Host-Based IOCs (${hostIOCs.length})</span>
+                <span id="host-iocs-arrow">▼</span>
+              </button>
+              <div id="host-iocs" class="section-content">
+          `;
+          
+          hostIOCs.slice(0, 10).forEach(ioc => {
+            html += `
+              <div class="ioc-item">
+                <div class="ioc-header">
+                  <span>📁</span>
+                  <span>${ioc.filename || 'Unknown'}</span>
+                </div>
+                <div class="ioc-details">
+                  ${ioc.md5 ? `<div><span class="ioc-label">MD5:</span> <span class="ioc-value">${ioc.md5}</span></div>` : ''}
+                  ${ioc.family ? `<div><span class="ioc-label">Family:</span> <span class="ioc-value">${ioc.family}</span></div>` : ''}
+                  ${ioc.source ? `<div><span class="ioc-label">Source:</span> <span class="ioc-value">${ioc.source}</span></div>` : ''}
+                </div>
+              </div>
+            `;
+          });
+          
+          if (hostIOCs.length > 10) {
+            html += `<div style="text-align: center; color: var(--muted); font-size: .85rem; margin-top: .5rem;">... and ${hostIOCs.length - 10} more</div>`;
+          }
+          
+          html += `
+              </div>
+            </div>
+          `;
+        }
+        
+        if (networkIOCs.length > 0) {
+          html += `
+            <div class="collapsible-section">
+              <button class="section-toggle" onclick="toggleSection('network-iocs')">
+                <span>🌐 Network-Based IOCs (${networkIOCs.length})</span>
+                <span id="network-iocs-arrow">▼</span>
+              </button>
+              <div id="network-iocs" class="section-content">
+          `;
+          
+          networkIOCs.forEach(ioc => {
+            html += `
+              <div class="ioc-item">
+                <div class="ioc-header">
+                  <span>🌐</span>
+                  <span>${ioc.value || 'Unknown'}</span>
+                </div>
+                <div class="ioc-details">
+                  ${ioc.family ? `<div><span class="ioc-label">Family:</span> <span class="ioc-value">${ioc.family}</span></div>` : ''}
+                  ${ioc.comment ? `<div><span class="ioc-label">Comment:</span> <span class="ioc-value">${ioc.comment}</span></div>` : ''}
+                  ${ioc.source ? `<div><span class="ioc-label">Source:</span> <span class="ioc-value">${ioc.source}</span></div>` : ''}
+                </div>
+              </div>
+            `;
+          });
+          
+          html += `
+              </div>
+            </div>
+          `;
+        }
+        
+        html += '</div>';
+      }
+      
+      // Show related techniques
+      const relatedEdges = edges.filter(e => e.from === node.id || e.to === node.id);
+      if (relatedEdges.length > 0) {
+        html += `
+          <div class="info-section">
+            <div class="info-label">Related Techniques (${relatedEdges.length})</div>
+        `;
+        
+        relatedEdges.forEach(edge => {
+          const relatedId = edge.from === node.id ? edge.to : edge.from;
+          const relatedNode = nodes.find(n => n.id === relatedId);
+          if (relatedNode) {
+            const relationship = edge.sharedTools ? `Shares tools: ${edge.sharedTools.join(', ')}` : 'Sequential in kill chain';
+            html += `
+              <div class="info-value" style="margin-bottom: .5rem;">
+                <strong>${relatedNode.technique_id}</strong>: ${relatedNode.technique_name}<br>
+                <small style="color: var(--muted);">${relationship}</small>
+              </div>
+            `;
+          }
+        });
+        
+        html += '</div>';
+      }
+      
+      details.innerHTML = html;
+      infoPanel.style.display = 'block';
+    }
+
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      const arrow = document.getElementById(sectionId + '-arrow');
+      
+      if (section.classList.contains('expanded')) {
+        section.classList.remove('expanded');
+        arrow.textContent = '▼';
+      } else {
+        section.classList.add('expanded');
+        arrow.textContent = '▲';
+      }
+    }
+
+    function closeNodeInfo() {
+      document.getElementById('nodeInfo').style.display = 'none';
+      selectedNode = null;
+    }
+
+    function resetView() {
+      camera = { x: 0, y: 0, zoom: 1 };
+      centerGraph();
+    }
+
+    function centerGraph() {
+      if (nodes.length === 0) return;
+      
+      let minX = Infinity, maxX = -Infinity;
+      let minY = Infinity, maxY = -Infinity;
+      
+      nodes.forEach(node => {
+        minX = Math.min(minX, node.x - node.radius);
+        maxX = Math.max(maxX, node.x + node.radius);
+        minY = Math.min(minY, node.y - node.radius);
+        maxY = Math.max(maxY, node.y + node.radius);
+      });
+      
+      const graphWidth = maxX - minX;
+      const graphHeight = maxY - minY;
+      const graphCenterX = (minX + maxX) / 2;
+      const graphCenterY = (minY + maxY) / 2;
+      
+      const zoomX = (canvas.width * 0.9) / graphWidth;
+      const zoomY = (canvas.height * 0.9) / graphHeight;
+      camera.zoom = Math.min(zoomX, zoomY, 1);
+      
+      camera.x = canvas.width / 2 - graphCenterX * camera.zoom;
+      camera.y = canvas.height / 2 - graphCenterY * camera.zoom;
+    }
+
+    // Make toggleSection available globally
+    window.toggleSection = toggleSection;
+
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>

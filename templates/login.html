@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - Sigmahound</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #0f152a;
+      --text: #e5e7eb;
+      --accent: #2563eb;
+      --accent-2: #1d4ed8;
+      --border: #223052;
+      --danger: #ef4444;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(37,99,235,.2), transparent 40%),
+                  radial-gradient(1200px 800px at 80% 110%, rgba(34,211,238,.15), transparent 45%),
+                  var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 2rem;
+    }
+    
+    .logo-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logo {
+      width: 180px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .login-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,.4);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      font-size: .9rem;
+      font-weight: 500;
+      margin-bottom: .5rem;
+      color: #cbd5e1;
+    }
+    
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: .9rem 1rem;
+      background: #0c1226;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: all .2s;
+    }
+    
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    
+    .btn-login {
+      width: 100%;
+      padding: .9rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    
+    .btn-login:hover {
+      background: var(--accent-2);
+      transform: translateY(-1px);
+    }
+    
+    .error-message {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: .75rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: .9rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo-section">
+      <img src="/static/sigmahound.png" alt="Logo" class="logo">
+    </div>
+    
+    <div class="login-box">
+      {% if error %}
+      <div class="error-message">{{ error }}</div>
+      {% endif %}
+      
+      <form method="POST" action="/login">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autofocus>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        
+        <button type="submit" class="btn-login">Login</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
